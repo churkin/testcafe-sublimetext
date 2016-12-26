@@ -1,0 +1,14 @@
+[
+  {
+    "caption": "TestCafe: Run all test",
+    "command": "test_cafe", "args": {"all_tests": true}
+  },
+  {
+    "caption": "TestCafe: Run current",
+    "command": "test_cafe"
+  },
+  {
+    "caption": "TestCafe: Show output panel",
+    "command": "show_panel", "args": {"panel": "output.testcafe_tests"}
+  }
+]
