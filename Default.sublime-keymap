@@ -1,0 +1,14 @@
+[
+  {
+    "keys": ["ctrl+alt+t"], "command": "test_cafe"
+  },
+  {
+    "keys": ["ctrl+alt+a"], "command": "test_cafe", "args": {"cmd": "all"}
+  },
+  {
+    "keys": ["ctrl+alt+p"], "command": "test_cafe", "args": {"cmd": "previous"}
+  },
+  {
+    "keys": ["ctrl+alt+l"], "command": "show_panel", "args": {"panel": "output.testcafe"}
+  }
+]

@@ -161,12 +161,12 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
             self.text_queue_lock.release()
 
         if not hasattr(self, 'output_view'):
-            self.output_view = self.window.create_output_panel('exec')
+            self.output_view = self.window.create_output_panel('testcafe')
 
         self.output_view.settings().set('line_numbers', False)
         self.output_view.settings().set('gutter', False)
         self.output_view.settings().set('scroll_past_end', False)
-        self.window.create_output_panel('exec')
+        self.window.create_output_panel('testcafe')
 
         self.proc = None
 
@@ -174,7 +174,7 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
 
         show_panel_on_build = sublime.load_settings('Preferences.sublime-settings').get('show_panel_on_build', True)
         if show_panel_on_build:
-            self.window.run_command('show_panel', {'panel': 'output.exec'})
+            self.window.run_command('show_panel', {'panel': 'output.testcafe'})
 
         self.proc = AsyncProcess(testcafe_cmd, self)
 

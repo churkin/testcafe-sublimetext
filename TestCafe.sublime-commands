@@ -1,7 +1,11 @@
 [
   {
-    "caption": "TestCafe: Run all test",
-    "command": "test_cafe", "args": {"all_tests": true}
+    "caption": "TestCafe: Run file",
+    "command": "test_cafe", "args": {"cmd": "all"}
+  },
+  {
+    "caption": "TestCafe: Run previous",
+    "command": "test_cafe", "args": {"cmd": "previous"}
   },
   {
     "caption": "TestCafe: Run current",
@@ -9,6 +13,6 @@
   },
   {
     "caption": "TestCafe: Show output panel",
-    "command": "show_panel", "args": {"panel": "output.testcafe_tests"}
+    "command": "show_panel", "args": {"panel": "output.testcafe"}
   }
 ]
