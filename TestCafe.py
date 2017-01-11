@@ -116,21 +116,22 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
 
     def get_testcafe_cmd(self, test_code, file_name):
         match = None
-        for match in re.finditer(FIND_TEST_OR_FIXTURE_RE, test_code, re.IGNORECASE | re.MULTILINE):
+        for match in re.finditer(FIND_TEST_OR_FIXTURE_RE, test_code, re.I | re.M):
             pass
 
         testcafe_cmd = file_name
 
-        if match is not None:
-            fixture_name = match.group(2)
-            test_name = match.group(4)
-            if fixture_name is not None:
-                fixture_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', fixture_name)
-                return testcafe_cmd + ' -f ' + '"' + fixture_name + '"'
-            elif test_name is not None:
-                test_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', test_name)
-                return testcafe_cmd + ' -t ' + '"' + test_name + '"'
-        return testcafe_cmd
+        if match is None:
+            return testcafe_cmd
+
+        fixture_name = match.group(2)
+        test_name = match.group(4)
+        if fixture_name is not None:
+            fixture_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', fixture_name)
+            return '{0} -f "{1}"'.format(testcafe_cmd, fixture_name)
+        elif test_name is not None:
+            test_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', test_name)
+            return '{0} -t "{1}"'.format(testcafe_cmd, test_name)
 
     def run(self, cmd=None, browser=None):
         global BROWSER_LIST
