@@ -154,9 +154,11 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
     def run(self, cmd=None, browser=None):
         global BROWSER_LIST
         selection = self.window.active_view().sel()[0]
+        line = self.window.active_view().line(selection.b)
         file_name = self.window.active_view().file_name()
 
-        cursor_text = self.window.active_view().substr(sublime.Region(0, selection.b))
+        cursor_text = self.window.active_view().substr(sublime.Region(0, line.b))
+
 
         if browser is None:
             browser = BROWSER_LIST[0]
