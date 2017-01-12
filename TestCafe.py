@@ -264,3 +264,4 @@ menu_template = json.loads(CONTEXT_MENU_TEMPLATE)
 
 add_items_to_context_menu(menu_template, CONTEXT_MENU_FILE_NAME)
 add_items_to_context_menu(menu_template, SIDE_BAR_FILE_NAME, 'all')
+
