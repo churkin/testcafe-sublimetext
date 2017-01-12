@@ -19,12 +19,12 @@ CLEANUP_TEST_OR_FIXTURE_NAME_RE = '(^\s*(\'|"|`))|((\'|"|`)\s*$)'
 TEMPLATES = {
     'context_menu': [{'caption': 'TestCafe', 'id': 'testcafe', 'children': [{
         'args': {'cmd': 'previous'},
-        'caption': 'Repeat the Previous',
+        'caption': 'Rerun previous tests',
         'command': 'test_cafe'
     }, {'caption': '-'}]}],
     'side_bar_menu': [{'caption': 'TestCafe', 'children': [{
         'args': {'cmd': 'previous'},
-        'caption': 'Repeat the Previous',
+        'caption': 'Rerun previous tests',
         'command': 'test_cafe',
         'mnemonic': 'P'
     }, {'caption': '-'}]}],
@@ -32,7 +32,7 @@ TEMPLATES = {
                 'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
                                           'command': 'show_panel', 'keys': ['ctrl+alt+l']}],
     'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show output panel',
-                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Run previous",
+                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Rerun previous tests",
                                              "command": "test_cafe"}]
 }
 
