@@ -11,12 +11,30 @@ import json
 PACKAGE_PATH = os.path.dirname(__file__)
 CONTEXT_MENU_FILE_NAME = 'Context.sublime-menu'
 SIDE_BAR_FILE_NAME = 'Side Bar.sublime-menu'
+COMMANDS_FILE_NAME = 'TestCafe.sublime-commands'
+KEYMAP_FILE_NAME = 'Default.sublime-keymap'
 FIND_TEST_OR_FIXTURE_RE = '(^|;|\s+)fixture\s*(\(.+?\)|`.+?`)|(^|;|\s+)test\s*\(\s*(.+?)\s*,'
 CLEANUP_TEST_OR_FIXTURE_NAME_RE = '(^\s*(\'|"|`))|((\'|"|`)\s*$)'
 
-context_menu_file = open(PACKAGE_PATH + '\\' + CONTEXT_MENU_FILE_NAME)
-CONTEXT_MENU_TEMPLATE = context_menu_file.read()
-context_menu_file.close()
+TEMPLATES = {
+    'context_menu': [{'caption': 'TestCafe', 'id': 'testcafe', 'children': [{
+        'args': {'cmd': 'previous'},
+        'caption': 'Repeat the Previous',
+        'command': 'test_cafe'
+    }, {'caption': '-'}]}],
+    'side_bar_menu': [{'caption': 'TestCafe', 'children': [{
+        'args': {'cmd': 'previous'},
+        'caption': 'Repeat the Previous',
+        'command': 'test_cafe',
+        'mnemonic': 'P'
+    }, {'caption': '-'}]}],
+    'keymap': [{'args': {'cmd': 'previous'}, 'command': 'test_cafe',
+                'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
+                                          'command': 'show_panel', 'keys': ['ctrl+alt+l']}],
+    'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show output panel',
+                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Run previous",
+                                             "command": "test_cafe"}]
+}
 
 BROWSER_LIST = subprocess.getoutput('testcafe --list-browsers').split('\n')
 
@@ -84,7 +102,7 @@ class AsyncProcess(object):
 
     def read_stdout(self):
         while True:
-            data = os.read(self.proc.stdout.fileno(), 2**15)
+            data = os.read(self.proc.stdout.fileno(), 2 ** 15)
 
             if len(data) > 0:
                 if self.listener:
@@ -95,7 +113,7 @@ class AsyncProcess(object):
 
     def read_stderr(self):
         while True:
-            data = os.read(self.proc.stderr.fileno(), 2**15)
+            data = os.read(self.proc.stderr.fileno(), 2 ** 15)
 
             if len(data) > 0:
                 if self.listener:
@@ -106,7 +124,7 @@ class AsyncProcess(object):
 
 
 class TestCafeCommand(sublime_plugin.WindowCommand):
-    BLOCK_SIZE = 2**14
+    BLOCK_SIZE = 2 ** 14
     text_queue = collections.deque()
     text_queue_proc = None
     text_queue_lock = threading.Lock()
@@ -235,33 +253,40 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
         self.output_view.run_command('append', {
             'characters': str,
             'force': True,
-            'scroll_to_end': True })
+            'scroll_to_end': True})
 
         if not is_empty:
             sublime.set_timeout(self.service_text_queue, 1)
 
 
-def add_items_to_context_menu(template, file_name, cmd=None):
-    testcafe_item = template[0]
-    run_previous_item = testcafe_item['children'][0]
-    separator_item = testcafe_item['children'][1]
-    items = [run_previous_item, separator_item]
+for browser in BROWSER_LIST:
+    browserIndex = BROWSER_LIST.index(browser) + 1
 
-    for browser in BROWSER_LIST:
-        item = { 'command': 'test_cafe',
-                 'caption': 'Run in ' + browser,
-                 'args': { 'browser': browser }}
-        if cmd is not None:
-            item['args']['cmd'] = cmd
-        items.append(item)
+    command = {'command': 'test_cafe',
+               'caption': 'TestCafe: Run in {0}'.format(browser),
+               'args': {'browser': browser}}
+    TEMPLATES['commands'].append(command)
+    comtext_menu_item = {'command': 'test_cafe',
+                         'caption': 'Run in {0}'.format(browser, browserIndex),
+                         'args': {'browser': browser}}
+    TEMPLATES['context_menu'][0]['children'].append(comtext_menu_item)
+    side_bar_menu_item = {'command': 'test_cafe',
+                          'caption': 'Run in {0}'.format(browser, browserIndex),
+                          'args': {'browser': browser, 'cmd': 'all'}}
+    TEMPLATES['side_bar_menu'][0]['children'].append(side_bar_menu_item)
+    keymap_item = {'command': 'test_cafe', 'keys': ["ctrl+alt+{0}".format(browserIndex)],
+                   'args': {'browser': browser}}
+    TEMPLATES['keymap'].append(keymap_item)
 
-    testcafe_item['children'] = items
+
+def writeToFile(file_name, content):
     f = open(PACKAGE_PATH + '\\' + file_name, 'w')
-    f.write(json.dumps(template))
+    f.write(json.dumps(content, sort_keys=True, indent=4, separators=(',', ': ')))
     f.close()
 
-menu_template = json.loads(CONTEXT_MENU_TEMPLATE)
 
-add_items_to_context_menu(menu_template, CONTEXT_MENU_FILE_NAME)
-add_items_to_context_menu(menu_template, SIDE_BAR_FILE_NAME, 'all')
+writeToFile(KEYMAP_FILE_NAME, TEMPLATES['keymap'])
+writeToFile(COMMANDS_FILE_NAME, TEMPLATES['commands'])
+writeToFile(CONTEXT_MENU_FILE_NAME, TEMPLATES['context_menu'])
+writeToFile(SIDE_BAR_FILE_NAME, TEMPLATES['side_bar_menu'])
 
