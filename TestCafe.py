@@ -123,7 +123,7 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
             test_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', test_name)
             return '{0} -t "{1}"'.format(testcafe_cmd, test_name)
 
-    def run(self, cmd=None, browser=None):
+    def run(self, cmd=None, browser=''):
         selection = self.window.active_view().sel()[0]
         line = self.window.active_view().line(selection.b)
         file_name = self.window.active_view().file_name()
