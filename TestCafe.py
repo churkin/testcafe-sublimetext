@@ -6,37 +6,9 @@ import threading
 import subprocess
 import collections
 import re
-import json
 
-PACKAGE_PATH = os.path.dirname(__file__)
-CONTEXT_MENU_FILE_NAME = 'Context.sublime-menu'
-SIDE_BAR_FILE_NAME = 'Side Bar.sublime-menu'
-COMMANDS_FILE_NAME = 'TestCafe.sublime-commands'
-KEYMAP_FILE_NAME = 'Default.sublime-keymap'
 FIND_TEST_OR_FIXTURE_RE = '(^|;|\s+)fixture\s*(\(.+?\)|`.+?`)|(^|;|\s+)test\s*\(\s*(.+?)\s*,'
 CLEANUP_TEST_OR_FIXTURE_NAME_RE = '(^\s*(\'|"|`))|((\'|"|`)\s*$)'
-
-TEMPLATES = {
-    'context_menu': [{'caption': 'TestCafe', 'id': 'testcafe', 'children': [{
-        'args': {'cmd': 'previous'},
-        'caption': 'Rerun previous tests',
-        'command': 'test_cafe'
-    }, {'caption': '-'}]}],
-    'side_bar_menu': [{'caption': 'TestCafe', 'children': [{
-        'args': {'cmd': 'previous'},
-        'caption': 'Rerun previous tests',
-        'command': 'test_cafe',
-        'mnemonic': 'p'
-    }, {'caption': '-'}]}],
-    'keymap': [{'args': {'cmd': 'previous'}, 'command': 'test_cafe',
-                'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
-                                          'command': 'show_panel', 'keys': ['ctrl+alt+l']}],
-    'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show output panel',
-                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Rerun previous tests",
-                                             "command": "test_cafe"}]
-}
-
-BROWSER_LIST = subprocess.getoutput('testcafe --list-browsers').split('\n')
 
 
 class AsyncProcess(object):
@@ -152,17 +124,11 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
             return '{0} -t "{1}"'.format(testcafe_cmd, test_name)
 
     def run(self, cmd=None, browser=None):
-        global BROWSER_LIST
         selection = self.window.active_view().sel()[0]
         line = self.window.active_view().line(selection.b)
         file_name = self.window.active_view().file_name()
 
         cursor_text = self.window.active_view().substr(sublime.Region(0, line.b))
-
-
-        if browser is None:
-            browser = BROWSER_LIST[0]
-
         testcafe_cmd = 'testcafe ' + browser + ' '
 
         if cmd == 'previous' and self.previous_cmd is not None:
@@ -259,36 +225,3 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
 
         if not is_empty:
             sublime.set_timeout(self.service_text_queue, 1)
-
-
-for browser in BROWSER_LIST:
-    browserIndex = BROWSER_LIST.index(browser) + 1
-
-    command = {'command': 'test_cafe',
-               'caption': 'TestCafe: Run in {0}'.format(browser),
-               'args': {'browser': browser}}
-    TEMPLATES['commands'].append(command)
-    comtext_menu_item = {'command': 'test_cafe',
-                         'caption': 'Run in {0}'.format(browser, browserIndex),
-                         'args': {'browser': browser}}
-    TEMPLATES['context_menu'][0]['children'].append(comtext_menu_item)
-    side_bar_menu_item = {'command': 'test_cafe',
-                          'caption': 'Run in {0}'.format(browser, browserIndex),
-                          'args': {'browser': browser, 'cmd': 'all'}}
-    TEMPLATES['side_bar_menu'][0]['children'].append(side_bar_menu_item)
-    keymap_item = {'command': 'test_cafe', 'keys': ["ctrl+alt+{0}".format(browserIndex)],
-                   'args': {'browser': browser}}
-    TEMPLATES['keymap'].append(keymap_item)
-
-
-def writeToFile(file_name, content):
-    f = open(PACKAGE_PATH + '\\' + file_name, 'w')
-    f.write(json.dumps(content, sort_keys=True, indent=4, separators=(',', ': ')))
-    f.close()
-
-
-writeToFile(KEYMAP_FILE_NAME, TEMPLATES['keymap'])
-writeToFile(COMMANDS_FILE_NAME, TEMPLATES['commands'])
-writeToFile(CONTEXT_MENU_FILE_NAME, TEMPLATES['context_menu'])
-writeToFile(SIDE_BAR_FILE_NAME, TEMPLATES['side_bar_menu'])
-

@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "TestCafe: Refresh browser list",
+        "command": "test_cafe_browsers"
+    }
+]
