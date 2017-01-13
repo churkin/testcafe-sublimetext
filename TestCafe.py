@@ -26,7 +26,7 @@ TEMPLATES = {
         'args': {'cmd': 'previous'},
         'caption': 'Rerun previous tests',
         'command': 'test_cafe',
-        'mnemonic': 'P'
+        'mnemonic': 'p'
     }, {'caption': '-'}]}],
     'keymap': [{'args': {'cmd': 'previous'}, 'command': 'test_cafe',
                 'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
