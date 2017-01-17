@@ -13,20 +13,20 @@ KEYMAP_FILE_NAME = 'Default.sublime-keymap'
 TEMPLATES = {
     'context_menu': [{'caption': 'TestCafe', 'id': 'testcafe', 'children': [{
         'args': {'cmd': 'previous'},
-        'caption': 'Rerun previous tests',
+        'caption': 'Rerun Previous Tests',
         'command': 'test_cafe'
     }, {'caption': '-'}]}],
     'side_bar_menu': [{'caption': 'TestCafe', 'children': [{
         'args': {'cmd': 'previous'},
-        'caption': 'Rerun previous tests',
+        'caption': 'Rerun Previous Tests',
         'command': 'test_cafe',
         'mnemonic': 'p'
     }, {'caption': '-'}]}],
     'keymap': [{'args': {'cmd': 'previous'}, 'command': 'test_cafe',
                 'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
                                           'command': 'show_panel', 'keys': ['ctrl+alt+l']}],
-    'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show output panel',
-                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Rerun previous tests",
+    'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show Output Panel',
+                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Rerun Previous Tests",
                                              "command": "test_cafe"}]
 }
 
