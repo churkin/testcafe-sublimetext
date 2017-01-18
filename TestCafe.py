@@ -95,7 +95,7 @@ class AsyncProcess(object):
                 break
 
 
-class TestCafeCommand(sublime_plugin.WindowCommand):
+class TestCafeCommand(sublime_plugin.TextCommand):
     BLOCK_SIZE = 2 ** 14
     text_queue = collections.deque()
     text_queue_proc = None
@@ -123,12 +123,35 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
             test_name = re.sub(CLEANUP_TEST_OR_FIXTURE_NAME_RE, '', test_name)
             return '{0} -t "{1}"'.format(testcafe_cmd, test_name)
 
-    def run(self, cmd=None, browser=''):
-        selection = self.window.active_view().sel()[0]
-        line = self.window.active_view().line(selection.b)
-        file_name = self.window.active_view().file_name()
+    def clear_output_view(self):
+        self.output_view.set_read_only(False)
+        self.output_view.erase(self.edit, sublime.Region(0, self.output_view.size()))
+        self.output_view.set_read_only(True)
 
-        cursor_text = self.window.active_view().substr(sublime.Region(0, line.b))
+    def append_data_to_output_view(self, str):
+        self.output_view.set_read_only(False)
+        size = self.output_view.size()
+
+        # SublimeText3
+        self.output_view.run_command('append', {
+            'characters': str,
+            'force': True,
+            'scroll_to_end': True})
+
+        # SublimeText2
+        if self.output_view.size() == size:
+            self.output_view.insert(self.edit, self.output_view.size(), str)
+
+        self.output_view.set_read_only(True)
+
+    def run(self, edit, cmd=None, browser=''):
+        self.edit = edit
+        selection = self.view.sel()[0]
+        line = self.view.line(selection.b)
+        file_name = self.view.file_name()
+        window = self.view.window()
+
+        cursor_text = self.view.substr(sublime.Region(0, line.b))
         testcafe_cmd = 'testcafe ' + browser + ' '
 
         if cmd == 'previous' and self.previous_cmd is not None:
@@ -147,12 +170,9 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
             self.text_queue_lock.release()
 
         if not hasattr(self, 'output_view'):
-            self.output_view = self.window.create_output_panel('testcafe')
+            self.output_view = window.get_output_panel('testcafe')
 
-        self.output_view.settings().set('line_numbers', False)
-        self.output_view.settings().set('gutter', False)
-        self.output_view.settings().set('scroll_past_end', False)
-        self.window.create_output_panel('testcafe')
+        self.clear_output_view()
 
         self.proc = None
 
@@ -160,7 +180,7 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
 
         show_panel_on_build = sublime.load_settings('Preferences.sublime-settings').get('show_panel_on_build', True)
         if show_panel_on_build:
-            self.window.run_command('show_panel', {'panel': 'output.testcafe'})
+            window.run_command('show_panel', {'panel': 'output.testcafe'})
 
         self.proc = AsyncProcess(testcafe_cmd, self)
 
@@ -218,10 +238,7 @@ class TestCafeCommand(sublime_plugin.WindowCommand):
         finally:
             self.text_queue_lock.release()
 
-        self.output_view.run_command('append', {
-            'characters': str,
-            'force': True,
-            'scroll_to_end': True})
+        self.append_data_to_output_view(str)
 
         if not is_empty:
             sublime.set_timeout(self.service_text_queue, 1)

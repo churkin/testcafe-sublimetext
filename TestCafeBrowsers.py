@@ -20,14 +20,14 @@ TEMPLATES = {
         'args': {'cmd': 'previous'},
         'caption': 'Rerun Previous Tests',
         'command': 'test_cafe',
-        'mnemonic': 'p'
+        'mnemonic': 'P'
     }, {'caption': '-'}]}],
     'keymap': [{'args': {'cmd': 'previous'}, 'command': 'test_cafe',
                 'keys': ['ctrl+alt+p']}, {'args': {'panel': 'output.testcafe'},
                                           'command': 'show_panel', 'keys': ['ctrl+alt+l']}],
     'commands': [{'args': {'panel': 'output.testcafe'}, 'caption': 'TestCafe: Show Output Panel',
-                  "command": "show_panel"}, {"args": {"cmd": "previous"}, "caption": "TestCafe: Rerun Previous Tests",
-                                             "command": "test_cafe"}]
+                  'command': 'show_panel'}, {'args': {'cmd': 'previous'}, 'caption': 'TestCafe: Rerun Previous Tests',
+                                             'command': 'test_cafe'}]
 }
 
 
