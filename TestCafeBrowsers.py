@@ -38,7 +38,9 @@ def write_to_file(file_name, content):
 
 
 def update_browsers():
-    browser_list = subprocess.getoutput('testcafe --list-browsers').split('\n')
+    proc = subprocess.Popen(['testcafe', '--list-browsers'], stdout=subprocess.PIPE, shell=True)
+    result = proc.communicate()[0]
+    browser_list = result.decode('utf-8').strip().split('\n')
     templates = copy.deepcopy(TEMPLATES)
 
     for browser in browser_list:
