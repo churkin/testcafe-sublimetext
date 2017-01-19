@@ -32,7 +32,7 @@ TEMPLATES = {
 
 
 def write_to_file(file_name, content):
-    f = open(PACKAGE_PATH + '\\' + file_name, 'w')
+    f = open(os.path.join(PACKAGE_PATH, file_name), 'w')
     f.write(json.dumps(content, sort_keys=True, indent=4, separators=(',', ': ')))
     f.close()
 
@@ -73,5 +73,5 @@ class TestCafeBrowsersCommand(sublime_plugin.WindowCommand):
         update_browsers()
 
 
-if not os.path.isfile(PACKAGE_PATH + '\\' + COMMANDS_FILE_NAME):
+if not os.path.isfile(os.path.join(PACKAGE_PATH, COMMANDS_FILE_NAME)):
     update_browsers()
