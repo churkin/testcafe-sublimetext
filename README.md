@@ -2,7 +2,7 @@
 
 ![Demo](./images/demo.gif)
 
-The **TestCafe TestRunner** plugin allows you to run TestCafe tests directly from your SublimeText 3 editor. Tests results will be displayed in a separate panel.
+The **TestCafe TestRunner** plugin allows you to run TestCafe tests directly from your SublimeText editor. Tests results will be displayed in a separate panel.
 
 ##Requirements
 
@@ -10,7 +10,7 @@ This plugin requires that TestCafe is installed globally on your machine. For in
 
 ##How to install
 
-You can install the **TestCafe Test Runner** plugin like any other SublimeText3 plugin, as described in SublimeText3 [documentation](https://www.sublimetext.com/docs/3/packages.html).
+You can install the **TestCafe Test Runner** plugin like any other SublimeText plugin, as described in SublimeText [documentation](https://www.sublimetext.com/docs/3/packages.html).
 
 ##How it works
 ###Initialization
