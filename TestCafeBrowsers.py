@@ -48,6 +48,14 @@ def get_browser_list():
         proc = subprocess.Popen('testcafe --list-browsers', stdout=subprocess.PIPE, shell=True)
 
     result = proc.communicate()[0]
+
+    if sys.platform == 'win32':
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        subprocess.Popen('taskkill /PID ' + str(proc.pid), startupinfo=startupinfo)
+    else:
+        proc.terminate()
+
     return result.decode('utf-8').strip().split('\n')
 
 def update_browsers():
