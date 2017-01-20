@@ -1,5 +1,6 @@
 import sublime_plugin
 import os
+import sys
 import subprocess
 import json
 import copy
@@ -36,11 +37,21 @@ def write_to_file(file_name, content):
     f.write(json.dumps(content, sort_keys=True, indent=4, separators=(',', ': ')))
     f.close()
 
+def get_browser_list():
+    proc = None
+    if sys.platform == 'win32':
+        proc = subprocess.Popen('testcafe --list-browsers', stdout=subprocess.PIPE, shell=True)
+    elif sys.platform == 'darwin':
+        # https://github.com/int3h/SublimeFixMacPath
+        proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'testcafe --list-browsers\''], stdout=subprocess.PIPE, shell=True)
+    elif sys.platform == 'linux':
+        pass # TODO
+
+    result = proc.communicate()[0]
+    return result.decode('utf-8').strip().split('\n')
 
 def update_browsers():
-    proc = subprocess.Popen(['testcafe', '--list-browsers'], stdout=subprocess.PIPE, shell=True)
-    result = proc.communicate()[0]
-    browser_list = result.decode('utf-8').strip().split('\n')
+    browser_list = get_browser_list()
     templates = copy.deepcopy(TEMPLATES)
 
     for browser in browser_list:

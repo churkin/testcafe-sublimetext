@@ -12,7 +12,7 @@ CLEANUP_TEST_OR_FIXTURE_NAME_RE = '(^\s*(\'|"|`))|((\'|"|`)\s*$)'
 
 
 class AsyncProcess(object):
-    def __init__(self, cmd, listener, shell=False):
+    def __init__(self, cmd, listener):
         self.listener = listener
         self.killed = False
         startupinfo = None
@@ -26,33 +26,24 @@ class AsyncProcess(object):
             proc_env[k] = os.path.expandvars(v)
 
         if sys.platform == 'win32':
-            self.proc = subprocess.Popen(cmd,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE,
-                                         startupinfo=startupinfo,
+            self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
                                          env=proc_env, shell=True)
         elif sys.platform == 'darwin':
-            self.proc = subprocess.Popen(['/bin/bash', '-l', '-c', cmd],
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE,
-                                         startupinfo=startupinfo,
-                                         env=proc_env, shell=False)
+            # https://github.com/int3h/SublimeFixMacPath
+            self.proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'' + cmd + '\''],
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
+                                         env=proc_env, shell=True)
         elif sys.platform == 'linux':
-            self.proc = subprocess.Popen(['/bin/bash', '-c', cmd],
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE,
-                                         startupinfo=startupinfo,
-                                         env=proc_env, shell=False)
+            pass # TODO:
         else:
             self.proc = subprocess.Popen(cmd,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          stdin=subprocess.PIPE,
                                          startupinfo=startupinfo,
-                                         env=proc_env, shell=shell)
+                                         env=proc_env)
 
         if self.proc.stdout:
             threading.Thread(target=self.read_stdout).start()
