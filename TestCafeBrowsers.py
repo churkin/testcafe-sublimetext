@@ -54,7 +54,11 @@ def get_browser_list():
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         subprocess.Popen('taskkill /PID ' + str(proc.pid), startupinfo=startupinfo)
     else:
-        proc.terminate()
+        try:
+            proc.terminate()
+        except:
+            # ST2 on the Mac raises exception
+            pass
 
     return result.decode('utf-8').strip().split('\n')
 

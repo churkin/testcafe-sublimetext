@@ -62,7 +62,11 @@ class AsyncProcess(object):
                 subprocess.Popen('taskkill /PID ' + str(self.proc.pid),
                                  startupinfo=startupinfo)
             else:
-                self.proc.terminate()
+                try:
+                    self.proc.terminate()
+                except:
+                    # ST2 on the Mac raises exception
+                    pass
             self.listener = None
 
     def read_stdout(self):
