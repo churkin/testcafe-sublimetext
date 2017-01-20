@@ -36,7 +36,9 @@ class AsyncProcess(object):
                                          stdin=subprocess.PIPE, startupinfo=startupinfo,
                                          env=proc_env, shell=True)
         elif sys.platform == 'linux':
-            pass # TODO:
+            self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
+                                         env=proc_env, shell=True)
         else:
             self.proc = subprocess.Popen(cmd,
                                          stdout=subprocess.PIPE,

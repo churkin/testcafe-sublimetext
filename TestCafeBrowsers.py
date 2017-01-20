@@ -45,7 +45,7 @@ def get_browser_list():
         # https://github.com/int3h/SublimeFixMacPath
         proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'testcafe --list-browsers\''], stdout=subprocess.PIPE, shell=True)
     elif sys.platform == 'linux':
-        pass # TODO
+        proc = subprocess.Popen('testcafe --list-browsers', stdout=subprocess.PIPE, shell=True)
 
     result = proc.communicate()[0]
     return result.decode('utf-8').strip().split('\n')
