@@ -3,49 +3,22 @@ import sublime_plugin
 import os
 import sys
 import threading
-import subprocess
 import collections
 import re
 
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+import ProcessRunner as process_runner
+
 FIND_TEST_OR_FIXTURE_RE = '(^|;|\s+)fixture\s*(\(.+?\)|`.+?`)|(^|;|\s+)test\s*\(\s*(.+?)\s*,'
 CLEANUP_TEST_OR_FIXTURE_NAME_RE = '(^\s*(\'|"|`))|((\'|"|`)\s*$)'
-
 
 class AsyncProcess(object):
     def __init__(self, cmd, listener):
         self.listener = listener
         self.killed = False
-        startupinfo = None
 
-        if os.name == 'nt':
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-        proc_env = os.environ.copy()
-        for k, v in proc_env.items():
-            proc_env[k] = os.path.expandvars(v)
-
-        if sys.platform == 'win32':
-            self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
-                                         env=proc_env, shell=True)
-        elif sys.platform == 'darwin':
-            # https://github.com/int3h/SublimeFixMacPath
-            self.proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'' + cmd + '\''],
-                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
-                                         env=proc_env, shell=True)
-        elif sys.platform == 'linux':
-            self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE, startupinfo=startupinfo,
-                                         env=proc_env, shell=True)
-        else:
-            self.proc = subprocess.Popen(cmd,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE,
-                                         startupinfo=startupinfo,
-                                         env=proc_env)
+        self.proc = process_runner.run(cmd)
 
         if self.proc.stdout:
             threading.Thread(target=self.read_stdout).start()
@@ -56,17 +29,7 @@ class AsyncProcess(object):
     def kill(self):
         if not self.killed:
             self.killed = True
-            if sys.platform == 'win32':
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                subprocess.Popen('taskkill /PID ' + str(self.proc.pid),
-                                 startupinfo=startupinfo)
-            else:
-                try:
-                    self.proc.terminate()
-                except:
-                    # ST2 on the Mac raises exception
-                    pass
+            process_runner.kill(self.proc)
             self.listener = None
 
     def read_stdout(self):

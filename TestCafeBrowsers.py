@@ -1,9 +1,12 @@
 import sublime_plugin
 import os
 import sys
-import subprocess
 import json
 import copy
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+import ProcessRunner as process_runner
 
 PACKAGE_PATH = os.path.dirname(__file__)
 CONTEXT_MENU_FILE_NAME = 'Context.sublime-menu'
@@ -37,30 +40,13 @@ def write_to_file(file_name, content):
     f.write(json.dumps(content, sort_keys=True, indent=4, separators=(',', ': ')))
     f.close()
 
+
 def get_browser_list():
-    proc = None
-    if sys.platform == 'win32':
-        proc = subprocess.Popen('testcafe --list-browsers', stdout=subprocess.PIPE, shell=True)
-    elif sys.platform == 'darwin':
-        # https://github.com/int3h/SublimeFixMacPath
-        proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'testcafe --list-browsers\''], stdout=subprocess.PIPE, shell=True)
-    elif sys.platform == 'linux':
-        proc = subprocess.Popen('testcafe --list-browsers', stdout=subprocess.PIPE, shell=True)
-
+    proc = process_runner.run('testcafe --list-browsers')
     result = proc.communicate()[0]
-
-    if sys.platform == 'win32':
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        subprocess.Popen('taskkill /PID ' + str(proc.pid), startupinfo=startupinfo)
-    else:
-        try:
-            proc.terminate()
-        except:
-            # ST2 on the Mac raises exception
-            pass
-
+    process_runner.kill(proc)
     return result.decode('utf-8').strip().split('\n')
+
 
 def update_browsers():
     browser_list = get_browser_list()
