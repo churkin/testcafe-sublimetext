@@ -69,7 +69,7 @@ class TestCafeCommand(sublime_plugin.TextCommand):
         for match in re.finditer(FIND_TEST_OR_FIXTURE_RE, test_code, re.I | re.M):
             pass
 
-        testcafe_cmd = file_name
+        testcafe_cmd = '"{0}"'.format(file_name)
 
         if match is None:
             return testcafe_cmd
