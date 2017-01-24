@@ -1,20 +1,13 @@
 import sys
 import subprocess
 
+
 def run(cmd):
-    proc = None
-
-    if sys.platform == 'win32':
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    elif sys.platform == 'darwin':
+    if sys.platform == 'darwin' or sys.platform == 'linux':
         # https://github.com/int3h/SublimeFixMacPath
-        proc = subprocess.Popen(['/usr/bin/login -fqpl $USER $SHELL -l -c \'' + cmd + '\''], stdout=subprocess.PIPE,
-                                shell=True)
-    elif sys.platform == 'linux':
-        # TODO:
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        cmd = '$SHELL -l -i -c \'' + cmd + '\''
 
-    return proc
+    return subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 
 
 def kill(proc):
