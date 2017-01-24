@@ -7,7 +7,7 @@ def run(cmd):
         # https://github.com/int3h/SublimeFixMacPath
         cmd = '$SHELL -l -i -c \'' + cmd + '\''
 
-    return subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 
 def kill(proc):
