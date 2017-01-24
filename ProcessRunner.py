@@ -3,7 +3,7 @@ import subprocess
 
 
 def run(cmd):
-    if sys.platform == 'darwin' or sys.platform == 'linux':
+    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
         # https://github.com/int3h/SublimeFixMacPath
         cmd = '$SHELL -l -i -c \'' + cmd + '\''
 
