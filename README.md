@@ -14,7 +14,7 @@ You can install the **TestCafe Test Runner** plugin like any other SublimeText p
 
 ##How it works
 ###Initialization
-During initialization, the plugin detects browsers installed on your machine. The **TestRunner** plugin generates new items in the context menu for each installed browser. These items allows you to run tests in a selected browser.
+During initialization, the plugin detects browsers installed on your machine. The **TestRunner** plugin generates new items in the context menu for each installed browser. These items allow you to run tests in a selected browser.
 
 ![Editor context menu](./images/context-menu.png)
 
