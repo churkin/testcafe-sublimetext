@@ -2,7 +2,7 @@
 
 ![Demo](./images/demo.gif)
 
-The **TestCafe TestRunner** plugin allows you to run TestCafe tests directly from your SublimeText editor. Tests results will be displayed in a separate panel.
+[TestCafe](https://devexpress.github.io/testcafe/) is a pure Node.js end-to-end framework for testing web apps. This plugin allows you to run TestCafe tests directly from your SublimeText editor. Tests results will be displayed in a separate panel.
 
 ##Requirements
 
